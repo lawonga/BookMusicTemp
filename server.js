@@ -41,16 +41,21 @@ app.get('/callback', function(req, res) {
             console.log("Requesting playlist...");
             spotifyApi.getPlaylist('thelinmichael', '5ieJqeLJjjI8iJWaxeBLuK')
                 .then(function(data) {
-                    console.log("Request Back");
+
+                    //console.log("Request Back");
                     //console.log('Some information about this playlist', data.body);
                     obj = data.body.tracks.items;
 
                     //console.log(obj);
 
-                    var URIs = [];
+                    //var URIs = [];
+                    var ids = [];
 
                     obj.forEach(function(item) {
-                        URIs.push(item.track.uri);
+                        //var parts = item.track.uri.split(':'); // Splits uri into parts
+                        //URIs.push(parts[2]); // Takes the final part of (example): spotify:track:3t343ArThcwgLwNEnabI2I
+
+                        ids.push(item.track.id);
                     });
 
 
@@ -59,8 +64,18 @@ app.get('/callback', function(req, res) {
                     //    URIs.push(obj[key].track.uri);
                     //}
                     //
-                    console.log(URIs);
-                    console.log("Done");
+                    console.log(ids);
+                    console.log("\n");
+                    //console.log("Done");
+
+                    spotifyApi.getAudioFeaturesForTrack(URIs[3])
+                        .then(function(data) {
+
+                            console.log(data.body);
+                        }, function(err) {
+                            console.error("Something went wrong:");
+                            console.error(err);
+                        });
                 }, function(err) {
                     console.log('Something went wrong!', err);
                 });
