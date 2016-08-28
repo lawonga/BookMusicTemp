@@ -12,9 +12,9 @@ var request = require('request'); // "Request" library
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 
-var client_id = '5c352b51039646128c2b9ab2c19a17e5'; // Your client id
-var client_secret = '778a0cb111a14129a2f3d4e5e6af18b1'; // Your secret
-var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
+var client_id = 'CLIENT_ID'; // Your client id
+var client_secret = 'CLIENT_SECRET'; // Your secret
+var redirect_uri = 'REDIRECT_URI'; // Your redirect uri
 
 /**
  * Generates a random string containing numbers and letters
@@ -44,7 +44,7 @@ app.get('/login', function(req, res) {
     res.cookie(stateKey, state);
 
     // your application requests authorization
-    var scope = 'user-read-private user-read-email playlist-modify playlist-modify-public playlist-modify-private';
+    var scope = 'user-read-private user-read-email';
     res.redirect('https://accounts.spotify.com/authorize?' +
         querystring.stringify({
             response_type: 'code',
@@ -92,54 +92,21 @@ app.get('/callback', function(req, res) {
 
                 var options = {
                     url: 'https://api.spotify.com/v1/me',
-                    headers: {
-                        'Authorization': 'Bearer ' + access_token
-                    },
+                    headers: { 'Authorization': 'Bearer ' + access_token },
                     json: true
                 };
 
-
-                // Add songs to a play list
-                var SpotifyAPI = {
-                    addSongsToPlaylist: function(json) {
-                        var authOptions1 = {
-                            url: 'https://api.spotify.com/v1/users/' + json.id + '/playlists',
-                            body: JSON.stringify({
-                                'name': json.id,
-                                'public': false
-                            }),
-                            dataType: 'json',
-                            headers: {
-                                'Authorization': 'Bearer ' + access_token,
-                                'Content-Type': 'application/json',
-                            }
-                        };
-
-                        request.post(authOptions1, function(error, response, body) {
-                            console.log("----------------------------------------------");
-                            console.log(body);
-                        });
-                    },
-                    addSong: function(thisString) {
-                      console.log(thisString);
-                    }
-                };
-
-
                 // use the access token to access the Spotify Web API
-                var currentBody;
                 request.get(options, function(error, response, body) {
                     console.log(body);
-                    SpotifyAPI.addSongsToPlaylist(body);
-                    SpotifyAPI.addSong("ASDF");
                 });
 
                 // we can also pass the token to the browser to make requests from there
-                // res.redirect('/#' +
-                //   querystring.stringify({
-                //     access_token: access_token,
-                //     refresh_token: refresh_token
-                //   }));
+                res.redirect('/#' +
+                    querystring.stringify({
+                        access_token: access_token,
+                        refresh_token: refresh_token
+                    }));
             } else {
                 res.redirect('/#' +
                     querystring.stringify({
@@ -150,17 +117,13 @@ app.get('/callback', function(req, res) {
     }
 });
 
-
-
 app.get('/refresh_token', function(req, res) {
 
     // requesting access token from refresh token
     var refresh_token = req.query.refresh_token;
     var authOptions = {
         url: 'https://accounts.spotify.com/api/token',
-        headers: {
-            'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
-        },
+        headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
         form: {
             grant_type: 'refresh_token',
             refresh_token: refresh_token
