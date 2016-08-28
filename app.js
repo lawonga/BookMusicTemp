@@ -5,15 +5,6 @@
 var SpotifyWebApi = require('spotify-web-api-node');
 var server = require('./server.js');
 
-// credentials are optional
-//var spotifyApi = new SpotifyWebApi({
-//    clientId : '5c352b51039646128c2b9ab2c19a17e5',
-//    clientSecret : '778a0cb111a14129a2f3d4e5e6af18b1',
-//    redirectUri : 'localhost:8888/callback'
-//});
-
-
-
 
 //spotifyApi.searchTracks('Love', function(err, data) {
 //    if (err) {
